@@ -1,11 +1,57 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ポイ活記録</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial; padding: 16px; }
+    .box { padding: 12px; border: 1px solid #ddd; border-radius: 12px; }
+    .ok { color: #0a7; font-weight: 700; }
+    code { word-break: break-all; }
+  </style>
 </head>
 <body>
-  <h1>LINEミニアプリ起動OK 🎉</h1>
-  <p>ここまで来たら成功です。</p>
+  <h1>ポイ活記録</h1>
+  <div class="box">
+    <div id="status">初期化中…</div>
+    <div id="info" style="margin-top:10px; display:none;">
+      <div>✅ <span class="ok">LIFF 起動OK</span></div>
+      <div style="margin-top:8px;">userId:</div>
+      <code id="uid"></code>
+      <div style="margin-top:8px;">displayName:</div>
+      <code id="name"></code>
+    </div>
+  </div>
+
+  <script>
+    // ▼ここに「ミニアプリ管理画面で表示されてるID」を入れる
+    const LIFF_ID = "2008823891-jVOY36FL"; // ←今のURL末尾を仮で入れてる（後述）
+
+    async function main() {
+      try {
+        document.getElementById("status").textContent = "LIFF 初期化中…";
+        await liff.init({ liffId: LIFF_ID });
+
+        if (!liff.isLoggedIn()) {
+          document.getElementById("status").textContent = "ログインへ…";
+          liff.login();
+          return;
+        }
+
+        const profile = await liff.getProfile();
+        document.getElementById("status").textContent = "準備OK";
+        document.getElementById("info").style.display = "block";
+        document.getElementById("uid").textContent = profile.userId;
+        document.getElementById("name").textContent = profile.displayName || "(no name)";
+      } catch (e) {
+        document.getElementById("status").textContent =
+          "エラー: " + (e && e.message ? e.message : String(e));
+      }
+    }
+
+    main();
+  </script>
 </body>
 </html>
